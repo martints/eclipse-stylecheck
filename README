@@ -1,0 +1,10 @@
+=== BUILDING ===
+
+Before the project can be compiled using the usual eclipse mechanism,
+the following needs to be executed:
+
+python src/usr/martin/check_style/internal/settings/generator.py
+
+whereas the call to python has to be replaced using a suitable version
+of python. Python version 2.6 is currently tested.
+
