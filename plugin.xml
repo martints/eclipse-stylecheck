@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="problem"
+         name="Style Problem"
+         point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.problemmarker" />
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		<attribute name="id"/>
+		<attribute name="flags"/>
+		<attribute name="arguments"/>
+		<attribute name="categoryId"/>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.compilationParticipant">
+      <compilationParticipant
+            class="usr.martin.check_style.StyleChecker"
+            createsProblems="true"
+            id="usr.martin.check_style.style_check">
+         <managedMarker markerType="usr.martin.check_style.problem" />
+      </compilationParticipant>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.jdt.ui.preferences.JavaBasePreferencePage"
+            class="usr.martin.check_style.preferences.CheckStylePreferencePage"
+            id="usr.martin.check_style.preferences.CheckStylePreferencePage"
+            name="StyleChecker Preferences Page">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="usr.martin.check_style.internal.settings.PreferenceInitializer">
+      </initializer>
+   </extension>
+
+</plugin>

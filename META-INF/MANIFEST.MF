@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Style checker plugin
+Bundle-SymbolicName: usr.martin.check_style;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Martin Tschöpe
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.jdt.core,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime;bundle-version="3.7.0",
+ org.eclipse.ui,
+ org.eclipse.jdt.ui;bundle-version="3.7.0"
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: usr.martin.check_style.Activator
