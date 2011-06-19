@@ -1,0 +1,7 @@
+*~
+bin/
+src/usr/martin/check_style/CheckStyleSettings.java
+src/usr/martin/check_style/internal/settings/PreferenceInitializer.java
+src/usr/martin/check_style/internal/settings/SettingsNames.java
+src/usr/martin/check_style/preferences/CheckStylePreferencePage.java
+
