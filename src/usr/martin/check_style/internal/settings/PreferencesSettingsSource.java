@@ -8,22 +8,22 @@ import usr.martin.check_style.Activator;
  * This class extracts all informations from the global preferences
  */
 public class PreferencesSettingsSource 
-		extends SettingsSource {
-	private IPreferenceStore preferenceStore;
+        extends SettingsSource {
+    private IPreferenceStore preferenceStore;
 
-	public PreferencesSettingsSource() {
-		preferenceStore = Activator.getInstance().getPreferenceStore();
-	}
+    public PreferencesSettingsSource() {
+        preferenceStore = Activator.getInstance().getPreferenceStore();
+    }
 
-	@Override
-	public String getString(String key) 
-			throws MissingSettingException {
-		return preferenceStore.getString(key);
-	}
+    @Override
+    public String getString(String key) 
+            throws MissingSettingException {
+        return preferenceStore.getString(key);
+    }
 
-	@Override
-	public boolean getBoolean(String key) {
-		return preferenceStore.getBoolean(key);
-	}
+    @Override
+    public boolean getBoolean(String key) {
+        return preferenceStore.getBoolean(key);
+    }
 
 }

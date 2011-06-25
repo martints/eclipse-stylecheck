@@ -78,7 +78,7 @@ package usr.martin.check_style.internal.settings;
  * Constants for the names of the properties 
  */
 public interface SettingsNames {
-	String USE_PROJECT_SETTINGS = "use_project_settings";""")
+    String USE_PROJECT_SETTINGS = "use_project_settings";""")
     for e in entries:
         e.write_constants(f)
     f.write("\n}\n")
@@ -101,13 +101,14 @@ import usr.martin.check_style.Activator;
  * Class used to initialize default preference values.
  */
 public class PreferenceInitializer
-		extends AbstractPreferenceInitializer 
-		implements SettingsNames {
+        extends AbstractPreferenceInitializer 
+        implements SettingsNames {
 
-	public void initializeDefaultPreferences() {
-		IPreferenceStore store = Activator.getInstance().getPreferenceStore();
-		
-		// Set all values to their defaults
+    @Override
+    public void initializeDefaultPreferences() {
+        IPreferenceStore store = Activator.getInstance().getPreferenceStore();
+        
+        // Set all values to their defaults
 """)
     for e in entries:
         e.write_set_defaults(f)
@@ -132,19 +133,21 @@ import usr.martin.check_style.internal.settings.SettingsNames;
  */
 
 public class CheckStylePreferencePage
-		extends FieldEditorPreferencePage
-		implements IWorkbenchPreferencePage {
+        extends FieldEditorPreferencePage
+        implements IWorkbenchPreferencePage {
 
-	public CheckStylePreferencePage() { 
-		super(GRID);
-		setPreferenceStore(Activator.getInstance().getPreferenceStore());
-		setDescription("Settings for the Style-Checker");
-	}
-	
-	public void init(IWorkbench workbench) {
-	}
-	
-	public void createFieldEditors() {
+    public CheckStylePreferencePage() { 
+        super(GRID);
+        setPreferenceStore(Activator.getInstance().getPreferenceStore());
+        setDescription("Settings for the Style-Checker");
+    }
+
+    @Override
+    public void init(IWorkbench workbench) {
+    }
+    
+    @Override
+    public void createFieldEditors() {
 """)
     for e in entries:
         e.write_create_field_editor(f)
@@ -162,10 +165,10 @@ import org.eclipse.core.resources.IProject;
 
 
 public final class CheckStyleSettings
-		extends AbstractCheckStyleSettings{
-	public CheckStyleSettings(IProject project_) {
-		super(project_);
-	}
+        extends AbstractCheckStyleSettings{
+    public CheckStyleSettings(IProject project_) {
+        super(project_);
+    }
 """)
     for e in entries:
         e.write_getter(f)
@@ -181,6 +184,10 @@ entries = [
     Boolean(
         'may_use_wildcard_imports', False,
         entry_text = 'Are &wildcard imports allowed?'
+        ),
+    Boolean(
+        'may_import_inner_classes', False,
+        entry_text = 'Are imports of inner classes allowed?'
         ),
     ]
 
