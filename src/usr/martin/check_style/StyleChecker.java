@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.ReconcileContext;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-
-import usr.martin.check_style.CheckStyleProblem;
-import usr.martin.check_style.CheckStyleSettings;
 
 import usr.martin.check_style.import_check.StaticImportChecker;
 import usr.martin.check_style.import_check.WildcardImportChecker;
@@ -35,8 +36,14 @@ public final class StyleChecker
 	
 	@Override
 	public int aboutToBuild(IJavaProject project) {
+		setup(project.getProject()); 
+		
+		return READY_FOR_BUILD;
+	}
+
+	private void setup(IProject project) {
 		// get the state of all checkers:
-		CheckStyleSettings settings = new CheckStyleSettings(project.getProject());
+		CheckStyleSettings settings = new CheckStyleSettings(project);
 			
 		List<AbstractStyleCheck> styleChecks_ = new ArrayList<AbstractStyleCheck>();
 		for (AbstractStyleCheck check : getAllStyleChecks(settings)) {
@@ -45,9 +52,7 @@ public final class StyleChecker
 			}
 		}
 			
-		styleChecks = Collections.unmodifiableList(styleChecks_); 
-		
-		return READY_FOR_BUILD;
+		styleChecks = Collections.unmodifiableList(styleChecks_);
 	}
 
 	@Override
@@ -57,44 +62,74 @@ public final class StyleChecker
 
 	
 	@Override
+	public boolean isAnnotationProcessor() {
+		return true;
+	}
+
+	@Override
 	public void processAnnotations(BuildContext[] files) {
 		super.processAnnotations(files);
+		
+		if (files.length == 0) {
+			return;
+		}
+		
+		if (styleChecks == null) {
+			setup(files[0].getFile().getProject());
+		}
+
+		for (BuildContext file : files) {
+			ASTParser parser = ASTParser.newParser(AST.JLS3);
+			parser.setSource(file.getContents());
+			CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+			// Don't check for style problems, if the file cannot be parsed
+	
+			ProblemFactory problems = checkFile(file.getFile(), compilationUnit);
+			if (! problems.isEmpty()) {
+				file.recordNewProblems(problems.getProblems());
+			}
+		}
 	}
+	
+	
 
 	@Override
 	public void reconcile(ReconcileContext context) {
 		super.reconcile(context);
 		
 		if (styleChecks == null) {
-			aboutToBuild(context.getWorkingCopy().getJavaProject());
+			setup(context.getWorkingCopy().getJavaProject().getProject());
 		}
 		
-		CompilationUnit compilationUnit;
+		ProblemFactory problems;
 		try {
-			compilationUnit = context.getAST3();
+			problems = checkFile(
+					(IFile) context.getWorkingCopy().getCorrespondingResource(),
+					context.getAST3()
+					);
 		} catch (JavaModelException e) {
 			return;
 		}
-		// Don't check for style problems, if the file cannot be parsed
-		if (compilationUnit == null) {
-			return;
+		
+		if (problems.isEmpty()) {
+			context.putProblems(CheckStyleProblem.PROBLEM_MARKER, null);
+		} else {
+			context.putProblems(CheckStyleProblem.PROBLEM_MARKER, problems.getProblems());
 		}
+	}
 
-		ProblemFactory problemFactory = new ProblemFactory(context, compilationUnit);
+	private ProblemFactory checkFile(IFile file, CompilationUnit compilationUnit) {
+		ProblemFactory problemFactory = new ProblemFactory(file, compilationUnit);
 
 		for (AbstractStyleCheck check : styleChecks) {
 			try {
-				check.process(context, compilationUnit, problemFactory);
+				check.process(compilationUnit, problemFactory);
 			} catch (JavaModelException e) {
 				// Ignore the check, as there has been some syntax error somewhere
 			}
 		}
 
-		if (problemFactory.isEmpty()) {
-			context.putProblems(CheckStyleProblem.PROBLEM_MARKER, null);
-		} else {
-			context.putProblems(CheckStyleProblem.PROBLEM_MARKER, problemFactory.getProblems());
-			problemFactory.createProblemMarkers();
-		}
+		return problemFactory;
 	}
+
 }

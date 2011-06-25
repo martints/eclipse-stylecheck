@@ -3,30 +3,30 @@ package usr.martin.check_style;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
-import org.eclipse.jdt.core.compiler.ReconcileContext;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public final class ProblemFactory {
 
-	private final ReconcileContext context;
+	private final IFile file;
 	
 	private final List<CheckStyleProblem> problems = new ArrayList<CheckStyleProblem>();
 
 	private final CompilationUnit compilationUnit;
 
-	public ProblemFactory(ReconcileContext context_, CompilationUnit compilationUnit_) {
-		context = context_;
+	public ProblemFactory(IFile file_, CompilationUnit compilationUnit_) {
+		file = file_;
 		compilationUnit = compilationUnit_;
 	}
 
 	public void createProblem(CheckStyleProblem.Problem type, String message, ASTNode node) {
 		problems .add(new CheckStyleProblem(
-				context.getWorkingCopy().getResource(),
+				file,
 				type,
 				message,
 				node.getStartPosition(),
