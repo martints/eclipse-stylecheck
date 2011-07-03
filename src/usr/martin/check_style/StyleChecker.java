@@ -40,7 +40,7 @@ public final class StyleChecker
     }
 
     private void setup(IProject project_) {
-        styleChecks = Activator.findActiveStyleCheckers(project_);
+        styleChecks = Activator.getInstance().getUtil().findActiveStyleCheckers(project_);
     }
 
     @Override

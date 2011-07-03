@@ -1,18 +1,9 @@
 package usr.martin.check_style;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
-import usr.martin.check_style.import_check.InnerClassImportChecker;
-import usr.martin.check_style.import_check.StaticImportChecker;
-import usr.martin.check_style.import_check.WildcardImportChecker;
 
 public class Activator
         extends AbstractUIPlugin {
@@ -20,6 +11,8 @@ public class Activator
     public static final String PLUGIN_NAME = "usr.martin.check_style";
 
     private static Activator instance = null;
+
+    private Util util;
 
     public Activator() {
     }
@@ -33,6 +26,7 @@ public class Activator
             throws Exception {
         super.start(context);
         instance = this;
+        util = new Util();
     }
 
     @Override
@@ -40,6 +34,7 @@ public class Activator
             throws Exception {
         super.stop(context);
         instance = null;
+        util = null;
     }
 
     @Override
@@ -47,28 +42,8 @@ public class Activator
         return PlatformUI.getPreferenceStore();
     }
 
-    private static final AbstractStyleCheck[] getAllStyleChecks(CheckStyleSettings settings) {
-        return new AbstractStyleCheck[] {
-                new StaticImportChecker(settings),
-                new WildcardImportChecker(settings),
-                new InnerClassImportChecker(settings),
-                };
+    public Util getUtil() {
+        return util;
     }
-
-    public static final List<AbstractStyleCheck> findActiveStyleCheckers(IProject project_) {
-        // get the state of all checkers:
-        CheckStyleSettings settings = new CheckStyleSettings(project_);
-
-        List<AbstractStyleCheck> styleChecks_ = new ArrayList<AbstractStyleCheck>();
-        for (AbstractStyleCheck check : getAllStyleChecks(settings)) {
-            if (check.isEnabled()) {
-                styleChecks_.add(check);
-            }
-        }
-
-        return Collections.unmodifiableList(styleChecks_);
-    }
-
-
 
 }
