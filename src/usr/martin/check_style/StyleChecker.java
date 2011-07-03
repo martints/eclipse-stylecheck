@@ -6,11 +6,9 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.ReconcileContext;
@@ -113,7 +111,7 @@ public final class StyleChecker
             allCompiledFiles.remove(file.getFile());
 
             ASTParser parser = ASTParser.newParser(AST.JLS3);
-            ICompilationUnit source = findCompilationUnit(file.getFile());
+            ICompilationUnit source = JavaCore.createCompilationUnitFrom(file.getFile());
             if (source == null) {
                 continue;
             }
@@ -138,7 +136,7 @@ public final class StyleChecker
 
         for (IFile file : allCompiledFiles) {
             ASTParser parser = ASTParser.newParser(AST.JLS3);
-            ICompilationUnit source = findCompilationUnit(file);
+            ICompilationUnit source = JavaCore.createCompilationUnitFrom(file);
             if (source == null) {
                 continue;
             }
@@ -154,51 +152,6 @@ public final class StyleChecker
                 problems.createProblemMarkers();
             }
         }
-    }
-
-    private ICompilationUnit findCompilationUnit(IFile file) {
-        IPath path;
-        try {
-            path = getClassPathRelativePath(project.getRawClasspath(), file);
-        } catch (JavaModelException e1) {
-            return null;
-        }
-        if (path == null) {
-            return null;
-        }
-        IJavaElement element;
-        try {
-            element = project.findElement(path);
-        } catch (JavaModelException e) {
-            throw new RuntimeException(e);
-        }
-        if (element == null) {
-            return null;
-        }
-        while (element.getElementType() != IJavaElement.COMPILATION_UNIT) {
-            element = element.getParent();
-            if (element == null) {
-                return null;
-            }
-        }
-        return (ICompilationUnit) element;
-    }
-
-    private IPath getClassPathRelativePath(
-            IClasspathEntry[] resolvedClasspath, IFile file
-            ) {
-        IPath filePath = file.getFullPath();
-        for (IClasspathEntry e : resolvedClasspath) {
-            if (e.getEntryKind() != IClasspathEntry.CPE_SOURCE) {
-                continue;
-            }
-
-            if (e.getPath().isPrefixOf(filePath)) {
-                return filePath.makeRelativeTo(e.getPath());
-            }
-        }
-
-        return null;
     }
 
     private ProblemFactory checkFile(IFile file, ICompilationUnit compilationUnit) {
