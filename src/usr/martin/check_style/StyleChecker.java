@@ -12,9 +12,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.ReconcileContext;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 
 /**
  * This baseclass defines structures to easily process different style checks
@@ -110,19 +107,13 @@ public final class StyleChecker
         for (BuildContext file : files) {
             allCompiledFiles.remove(file.getFile());
 
-            ASTParser parser = ASTParser.newParser(AST.JLS3);
             ICompilationUnit source = JavaCore.createCompilationUnitFrom(file.getFile());
+            // Don't check for style problems, if the file cannot be parsed
             if (source == null) {
                 continue;
             }
-            parser.setSource(source);
-            parser.setBindingsRecovery(true);
-            CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-            // Don't check for style problems, if the file cannot be parsed
 
-            ProblemFactory problems = checkFile(
-                    file.getFile(), (ICompilationUnit) compilationUnit.getJavaElement()
-                    );
+            ProblemFactory problems = checkFile(file.getFile(), source);
             if (! problems.isEmpty()) {
                 file.recordNewProblems(problems.getProblems());
             }
@@ -135,19 +126,13 @@ public final class StyleChecker
         project = project_;
 
         for (IFile file : allCompiledFiles) {
-            ASTParser parser = ASTParser.newParser(AST.JLS3);
             ICompilationUnit source = JavaCore.createCompilationUnitFrom(file);
+            // Don't check for style problems, if the file cannot be parsed
             if (source == null) {
                 continue;
             }
-            parser.setSource(source);
-            parser.setBindingsRecovery(true);
-            CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-            // Don't check for style problems, if the file cannot be parsed
 
-            ProblemFactory problems = checkFile(
-                    file, (ICompilationUnit) compilationUnit.getJavaElement()
-                    );
+            ProblemFactory problems = checkFile(file, source);
             if (! problems.isEmpty()) {
                 problems.createProblemMarkers();
             }
