@@ -1,7 +1,5 @@
 package usr.martin.check_style;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,10 +18,6 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import usr.martin.check_style.import_check.InnerClassImportChecker;
-import usr.martin.check_style.import_check.StaticImportChecker;
-import usr.martin.check_style.import_check.WildcardImportChecker;
-
 /**
  * This baseclass defines structures to easily process different style checks
  */
@@ -38,14 +32,6 @@ public final class StyleChecker
     public StyleChecker() {
     }
 
-    private final AbstractStyleCheck[] getAllStyleChecks(CheckStyleSettings settings) {
-        return new AbstractStyleCheck[] {
-                new StaticImportChecker(settings),
-                new WildcardImportChecker(settings),
-                new InnerClassImportChecker(settings),
-                };
-    }
-
     @Override
     public int aboutToBuild(IJavaProject project_) {
         project = project_;
@@ -56,17 +42,7 @@ public final class StyleChecker
     }
 
     private void setup(IProject project_) {
-        // get the state of all checkers:
-        CheckStyleSettings settings = new CheckStyleSettings(project_);
-
-        List<AbstractStyleCheck> styleChecks_ = new ArrayList<AbstractStyleCheck>();
-        for (AbstractStyleCheck check : getAllStyleChecks(settings)) {
-            if (check.isEnabled()) {
-                styleChecks_.add(check);
-            }
-        }
-
-        styleChecks = Collections.unmodifiableList(styleChecks_);
+        styleChecks = Activator.findActiveStyleCheckers(project_);
     }
 
     @Override
