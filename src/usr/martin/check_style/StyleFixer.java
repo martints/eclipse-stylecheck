@@ -1,5 +1,6 @@
 package usr.martin.check_style;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -18,7 +19,19 @@ public class StyleFixer
 
     @Override
     public IMarkerResolution[] getResolutions(IMarker marker) {
-        return NOTHING;
+        ICompilationUnit cu = getCompilationUnit(marker);
+        if (cu == null) {
+            return NOTHING;
+        }
+
+        List<IMarkerResolution> updates = new ArrayList<IMarkerResolution>();
+
+        for (AbstractStyleCheck c : getStyleCheckers(cu)) {
+            if (c.hasResolutionsFor(marker, cu)) {
+                c.getResolutionsFor(marker, cu, updates);
+            }
+        }
+        return updates.toArray(new IMarkerResolution[updates.size()]);
     }
 
     @Override
