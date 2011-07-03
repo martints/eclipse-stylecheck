@@ -19,7 +19,7 @@ import org.eclipse.jface.text.Document;
 public final class ProblemFactory {
 
     private final IFile file;
-    
+
     private final List<CheckStyleProblem> problems = new ArrayList<CheckStyleProblem>();
 
     private final ICompilationUnit compilationUnit;
@@ -63,13 +63,13 @@ public final class ProblemFactory {
             for (CategorizedProblem problem : problems) {
                 // Create a Marker
                 IMarker marker = resource.createMarker(problem.getMarkerType());
-            
+
                 // Set Marker Attributes
                 marker.setAttribute(IMarker.MESSAGE, problem.getMessage());
                 marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
                 marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd());
                 marker.setAttribute(IMarker.LINE_NUMBER, problem.getSourceLineNumber());
-                
+
                 if (problem.isWarning()) {
                     marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
                 } else if (problem.isError()) {
@@ -86,5 +86,5 @@ public final class ProblemFactory {
     boolean isEmpty() {
         return problems.isEmpty();
     }
-    
+
 }
