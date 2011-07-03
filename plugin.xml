@@ -37,5 +37,12 @@
             class="usr.martin.check_style.internal.settings.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.ide.markerResolution">
+      <markerResolutionGenerator
+            class="usr.martin.check_style.StyleFixer"
+            markerType="usr.martin.check_style.problem">
+      </markerResolutionGenerator>
+   </extension>
 
 </plugin>

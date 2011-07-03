@@ -10,6 +10,7 @@ Require-Bundle: org.eclipse.jdt.core,
  org.eclipse.core.runtime;bundle-version="3.7.0",
  org.eclipse.ui,
  org.eclipse.jdt.ui;bundle-version="3.7.0",
- org.eclipse.jface.text;bundle-version="3.7.0"
+ org.eclipse.jface.text;bundle-version="3.7.0",
+ org.eclipse.ui.ide;bundle-version="3.7.0"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: usr.martin.check_style.Activator
